@@ -30,7 +30,7 @@ public class SubjectMapper {
         return subject;
     }
 
-    public static SubjectDto toDto(Subject subject) {
+    public static SubjectDto toDto(Exam subject) {
         if (subject == null) {
             return null;
         }

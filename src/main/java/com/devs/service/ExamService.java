@@ -2,8 +2,10 @@ package com.devs.service;
 
 import com.devs.domain.Exam;
 import com.devs.domain.dto.ExamDto;
+import com.devs.domain.dto.SubjectDto;
 import com.devs.exceptions.StudentNotFoundException;
 import com.devs.mappers.ExamMapper;
+import com.devs.mappers.SubjectMapper;
 import com.devs.repository.ExamRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,14 @@ public class ExamService {
         return allExams;
     }
 
+    @Transactional
+    public Optional<SubjectDto> update(Long id, String newExam) {
+        Exam examToUpdate = examRepo.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Exam not found"));
+        examToUpdate.setNameOfExam(newExam);
+        Exam updatedExam = examRepo.save(examToUpdate);
+        return Optional.ofNullable(SubjectMapper.toDto(updatedExam));
+    }
     @Transactional
     public void deleteById(Long id) {
         Optional<Exam> examToDelete = Optional.ofNullable(examRepo.findById(id)
