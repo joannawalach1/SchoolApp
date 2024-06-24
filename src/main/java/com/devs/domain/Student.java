@@ -1,11 +1,13 @@
 package com.devs.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,9 +16,23 @@ public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+//    @NotNull(message = "Name cannot be null")
+//    @Size(min = 2, max = 30, message = "Name must be between 2 and 30 characters")
     private String name;
+
+//    @NotNull(message = "Email cannot be null")
+//    @Email(message = "Email should be valid")
     private String email;
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    private List<Exam> exams = new ArrayList<>();
+
+    public void setExams(List<Exam> exams) {
+        this.exams = exams;
+    }
+
+    public List<Exam> getExams() {
+        return exams;
+    }
 
     public Student(String name, String email) {
     }

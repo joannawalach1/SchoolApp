@@ -1,10 +1,6 @@
 package com.devs.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
+import jakarta.persistence.*;
 
 
 import java.time.LocalDateTime;
@@ -17,6 +13,14 @@ public class Exam {
     private Long id;
     private String nameOfExam;
     private LocalDateTime dateOfExam;
+
+    @ManyToOne
+    @JoinColumn(name="student_id")
+    private Student student;
+
+    @ManyToOne
+    @JoinColumn(name="subject_id")
+    private Subject subject;
 
     public void setId(Long id) {
         this.id = id;

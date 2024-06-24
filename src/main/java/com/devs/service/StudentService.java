@@ -1,6 +1,7 @@
 package com.devs.service;
 
 import com.devs.domain.Student;
+import com.devs.exceptions.StudentNotFoundException;
 import com.devs.repository.StudentRepo;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +36,12 @@ public class StudentService implements CrudService<Student, Long> {
 
     @Override
     public Optional<Student> findById(Long id) {
-        Optional<Student> foundById = studentRepo.findById(id);
-        if (foundById.isPresent()) {
-            System.out.println("Znaleziono studenta" + foundById.get());
-        } else {
-            System.out.println("Nie znaleziono studenta o podanym ID: " + id);
-        }
+        Optional<Student> foundById = Optional.ofNullable(studentRepo.findById(id).orElseThrow(() -> new StudentNotFoundException("Student not found")));
+//        if (foundById.isPresent()) {
+//            System.out.println("Znaleziono studenta" + foundById.get());
+//        } else {
+//            System.out.println("Nie znaleziono studenta o podanym ID: " + id);
+//        }
         return foundById;
     }
 
@@ -70,7 +71,6 @@ public class StudentService implements CrudService<Student, Long> {
             System.out.println("Nie znaleziono studenta o podanym ID: " + id);
             return null;
         }
-
     }
 
     @Override
