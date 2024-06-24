@@ -29,7 +29,7 @@ public class SubjectService {
     public Optional<SubjectDto> findById(Long id) {
         Subject foundSubject = subjectRepo.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Subject not found"));
-        return Optional.ofNullable(subjectMapper.toDto(foundSubject));
+        return Optional.ofNullable(SubjectMapper.toDto(foundSubject));
     }
 
     public List<Subject> findAll() {

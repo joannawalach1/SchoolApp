@@ -40,12 +40,12 @@ public class ExamService {
     }
 
     @Transactional
-    public Optional<SubjectDto> update(Long id, String newExam) {
+    public Optional<ExamDto> update(Long id, String newExam) {
         Exam examToUpdate = examRepo.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Exam not found"));
         examToUpdate.setNameOfExam(newExam);
         Exam updatedExam = examRepo.save(examToUpdate);
-        return Optional.ofNullable(SubjectMapper.toDto(updatedExam));
+        return Optional.ofNullable(ExamMapper.toDto(updatedExam));
     }
     @Transactional
     public void deleteById(Long id) {

@@ -39,8 +39,7 @@ public class ExamController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Optional<ExamDto>> updateExam(@PathVariable Long id, @RequestBody ExamDto ExamDto) {
-        ExamDto.setId(id);
+    public ResponseEntity<Optional<ExamDto>> updateExam(@PathVariable Long id, @RequestBody String ExamDto) {
         Optional<ExamDto> updatedExam = examService.update(id, ExamDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedExam);
     }

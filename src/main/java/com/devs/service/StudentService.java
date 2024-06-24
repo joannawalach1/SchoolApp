@@ -44,7 +44,7 @@ public class StudentService {
     }
 
     @Transactional
-    public Optional<StudentDto> update(Long email, StudentDto newName) {
+    public Optional<StudentDto> update(String email, String newName) {
        Student studentToUpdate = studentRepo.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Student not found"));
        studentToUpdate.setName(newName);
