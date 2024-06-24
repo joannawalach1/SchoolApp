@@ -1,84 +1,55 @@
 package com.devs.service;
 
-import com.devs.domain.Student;
 import com.devs.domain.Subject;
+import com.devs.domain.dto.SubjectDto;
+import com.devs.exceptions.StudentNotFoundException;
+import com.devs.mappers.SubjectMapper;
 import com.devs.repository.SubjectRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 @Service
-public class SubjectService implements CrudService<Subject, Long> {
+@RequiredArgsConstructor
+public class SubjectService {
 
     private final SubjectRepo subjectRepo;
-    private final Scanner scanner;
+    private final SubjectMapper subjectMapper;
 
-    @Autowired
-    public SubjectService(SubjectRepo subjectRepo, Scanner scanner) {
-        this.subjectRepo = subjectRepo;
-        this.scanner = scanner;
-    }
-    @Override
-    public Subject save(Subject entity) {
-        System.out.println("Podaj nazwę przedmiotu");
-        String name = scanner.nextLine();;
-        entity.setName(name);
-        Subject savedSubject = subjectRepo.save(entity);
-        System.out.println("Dodano subject: " + savedSubject);
-        return savedSubject;
+    @Transactional
+    public SubjectDto save(SubjectDto subjectDto) {
+        Subject subject = subjectMapper.toEntity(subjectDto);
+        Subject savedSubject= subjectRepo.save(subject);
+        return subjectMapper.toDto(savedSubject);
     }
 
-    @Override
-    public Optional<Subject> findById(Long id) {
-        Optional<Subject> foundById = subjectRepo.findById(id);
-        if (foundById.isPresent()) {
-            System.out.println("Znaleziono subject" + foundById.get());
-        } else {
-            System.out.println("Nie znaleziono studenta o podanym ID: " + id);
-        }
-       return foundById;
+    public Optional<SubjectDto> findById(Long id) {
+        Subject foundSubject = subjectRepo.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Subject not found"));
+        return Optional.ofNullable(subjectMapper.toDto(foundSubject));
     }
 
-    @Override
     public List<Subject> findAll() {
         List<Subject> allSubjects = subjectRepo.findAll();
-        System.out.println("Lista studentów:");
-        allSubjects.forEach(System.out::println);
         return allSubjects;
     }
 
-    @Override
-    public Subject update(Long id) {
-        Optional<Subject> studentToUpdate = subjectRepo.findById(id);
-        if (studentToUpdate.isPresent()) {
-            System.out.println("Podaj nową nazwę przedmiotu");
-            String newName = scanner.nextLine();
-            Subject subject = studentToUpdate.get();
-            subject.setName(newName);
-            subjectRepo.save(subject);
-            System.out.println("Zaktualizowano subject o ID: " + id);
-            return subject;
-        }
-        else {
-            System.out.println("Nie znaleziono subject o podanym ID: " + id);
-            return null;
-        }
-
+    @Transactional
+    public Optional<SubjectDto> update(Long id, String newSubject) {
+        Subject subjectToUpdate = subjectRepo.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Subject not found"));
+        subjectToUpdate.setName(newSubject);
+        Subject updatedSubject = subjectRepo.save(subjectToUpdate);
+        return Optional.ofNullable(SubjectMapper.toDto(updatedSubject));
     }
 
-    @Override
-    public boolean deleteById(Long id) {
-        Optional<Subject>subjectToDelete = subjectRepo.findById(id);
-        if (subjectToDelete.isPresent()) {
-            subjectRepo.deleteById(id);
-            System.out.println("Usunięto subject o ID: " + id);
-            return true;
-        } else {
-            System.out.println("Nie znaleziono subject o podanym ID: " + id);
-            return  false;
-        }
+    @Transactional
+    public void deleteById(Long id) {
+        Optional<Subject> subjectToDelete = Optional.ofNullable(subjectRepo.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Subject not found")));
+        subjectRepo.deleteById(id);
     }
 }

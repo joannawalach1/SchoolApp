@@ -1,88 +1,62 @@
 package com.devs.service;
 
 import com.devs.domain.Student;
+import com.devs.domain.dto.StudentDto;
 import com.devs.exceptions.StudentNotFoundException;
+import com.devs.mappers.StudentMapper;
 import com.devs.repository.StudentRepo;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 
 @Service
-public class StudentService implements CrudService<Student, Long> {
+@RequiredArgsConstructor
+public class StudentService {
 
     private final StudentRepo studentRepo;
-    private final Scanner scanner;
+    private final StudentMapper studentMapper;
 
-    public StudentService(StudentRepo studentRepo, Scanner scanner) {
-        this.studentRepo = studentRepo;
-        this.scanner = scanner;
+    @Transactional
+    public StudentDto save(StudentDto studentDto) {
+        Student student = StudentMapper.toEntity(studentDto);
+        Student savedStudent = studentRepo.save(student);
+        return StudentMapper.toDto(student);
     }
 
-    @Override
-    public Student save(Student entity) {
-        System.out.println("Podaj imię studenta");
-        String name = scanner.nextLine();
-        System.out.println("Podaj email studenta");
-        String email = scanner.nextLine();
-        entity.setName(name);
-        entity.setEmail(email);
-        Student savedStudent = studentRepo.save(entity);
-        System.out.println("Dodano studenta: " + savedStudent);
-        return savedStudent;
+    public Optional<StudentDto> findById(Long id) {
+        Student student = studentRepo.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException("Student not found with id: " + id));
+        return Optional.ofNullable(StudentMapper.toDto(student));
     }
 
-    @Override
-    public Optional<Student> findById(Long id) {
-        Optional<Student> foundById = Optional.ofNullable(studentRepo.findById(id).orElseThrow(() -> new StudentNotFoundException("Student not found")));
-//        if (foundById.isPresent()) {
-//            System.out.println("Znaleziono studenta" + foundById.get());
-//        } else {
-//            System.out.println("Nie znaleziono studenta o podanym ID: " + id);
-//        }
-        return foundById;
+    public Optional<StudentDto> findByEmail(String email) {
+        Student student = studentRepo.findByEmail(email)
+                .orElseThrow(() -> new StudentNotFoundException("Student not found"));
+        return Optional.ofNullable(StudentMapper.toDto(student));
     }
 
-    @Override
     public List<Student> findAll() {
-        List<Student> allStudents = studentRepo.findAll();
-        System.out.println("Lista studentów:");
-        allStudents.forEach(System.out::println);
-        return allStudents;
+        return studentRepo.findAll();
     }
 
-    @Override
-    public Student update(Long id) {
-        Optional<Student> studentToUpdate = studentRepo.findById(id);
-        if (studentToUpdate.isPresent()) {
-            System.out.println("Podaj nowe imię studenta");
-            String newName = scanner.nextLine();
-            System.out.println("Podaj nowy email studenta");
-            String newEmail = scanner.nextLine();
-            Student student = studentToUpdate.get();
-            student.setName(newName);
-            student.setEmail(newEmail);
-            studentRepo.save(student);
-            System.out.println("Zaktualizowano studenta o ID: " + id);
-            return student;
-        } else {
-            System.out.println("Nie znaleziono studenta o podanym ID: " + id);
-            return null;
-        }
+    @Transactional
+    public Optional<StudentDto> update(String email, String newName) {
+       Student studentToUpdate = studentRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+       studentToUpdate.setName(newName);
+       Student updatedStudent = studentRepo.save(studentToUpdate);
+       return Optional.ofNullable(StudentMapper.toDto(updatedStudent));
+
     }
 
-    @Override
-    public boolean deleteById(Long id) {
-        Optional<Student> studentToDelete = studentRepo.findById(id);
-        if (studentToDelete.isPresent()) {
+    @Transactional
+    public void deleteById(Long id) {
+        Optional<Student> studentToDelete = Optional.ofNullable(studentRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found")));
             studentRepo.deleteById(id);
-            System.out.println("Usunięto studenta o ID: " + id);
-            return true;
-        } else {
-            System.out.println("Nie znaleziono studenta o podanym ID: " + id);
-            return false;
-        }
     }
 }
