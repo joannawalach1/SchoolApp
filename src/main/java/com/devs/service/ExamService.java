@@ -1,56 +1,59 @@
 package com.devs.service;
 
 import com.devs.domain.Exam;
+import com.devs.domain.Subject;
 import com.devs.domain.dto.ExamDto;
-import com.devs.domain.dto.SubjectDto;
-import com.devs.exceptions.StudentNotFoundException;
+import com.devs.exceptions.ExamNotFoundException;
 import com.devs.mappers.ExamMapper;
-import com.devs.mappers.SubjectMapper;
 import com.devs.repository.ExamRepo;
-import jakarta.transaction.Transactional;
+import com.devs.repository.StudentRepo;
+import com.devs.repository.SubjectRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.webjars.NotFoundException;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ExamService {
     private final ExamRepo examRepo;
-    private final ExamMapper examMapper;
-
-
+    private final StudentRepo studentRepo;
+    private final SubjectRepo subjectRepo;
     @Transactional
     public ExamDto save(ExamDto examDto) {
+        Subject subject = subjectRepo.findById(examDto.getSubjectId())
+                .orElseThrow(() -> new IllegalArgumentException("Subject not found with ID: " + examDto.getSubjectId()));
+
+
         Exam exam = ExamMapper.toEntity(examDto);
+        exam.setSubject(subject);
+
         Exam savedExam = examRepo.save(exam);
+
         return ExamMapper.toDto(savedExam);
     }
 
+
+    @Transactional(readOnly = true)
     public Optional<ExamDto> findById(Long id) {
         Exam foundExam = examRepo.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Exam not found"));
+                .orElseThrow(() -> new NotFoundException("Exam not found with ID: " + id));
         return Optional.ofNullable(ExamMapper.toDto(foundExam));
     }
 
-    public List<Exam> findAll() {
-        List<Exam> allExams = examRepo.findAll();
-        return allExams;
+    @Transactional
+    public Optional<ExamDto> update(Long id, String newExamName) {
+        Exam examToUpdate = examRepo.findById(id)
+                .orElseThrow(() -> new ExamNotFoundException("Exam not found with ID: " + id));
+        examToUpdate.setNameOfExam(newExamName);
+        Exam updatedExam = examRepo.save(examToUpdate);
+        return Optional.of(ExamMapper.toDto(updatedExam));
     }
 
     @Transactional
-    public Optional<ExamDto> update(Long id, String newExam) {
-        Exam examToUpdate = examRepo.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Exam not found"));
-        examToUpdate.setNameOfExam(newExam);
-        Exam updatedExam = examRepo.save(examToUpdate);
-        return Optional.ofNullable(ExamMapper.toDto(updatedExam));
-    }
-    @Transactional
     public void deleteById(Long id) {
-        Optional<Exam> examToDelete = Optional.ofNullable(examRepo.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException("Exam not found")));
         examRepo.deleteById(id);
     }
 }

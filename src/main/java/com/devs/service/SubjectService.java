@@ -5,11 +5,10 @@ import com.devs.domain.dto.SubjectDto;
 import com.devs.exceptions.StudentNotFoundException;
 import com.devs.mappers.SubjectMapper;
 import com.devs.repository.SubjectRepo;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,20 +20,15 @@ public class SubjectService {
 
     @Transactional
     public SubjectDto save(SubjectDto subjectDto) {
-        Subject subject = subjectMapper.toEntity(subjectDto);
+        Subject subject = SubjectMapper.toEntity(subjectDto);
         Subject savedSubject= subjectRepo.save(subject);
-        return subjectMapper.toDto(savedSubject);
+        return SubjectMapper.toDto(savedSubject);
     }
 
     public Optional<SubjectDto> findById(Long id) {
         Subject foundSubject = subjectRepo.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Subject not found"));
-        return Optional.ofNullable(SubjectMapper.toDto(foundSubject));
-    }
-
-    public List<Subject> findAll() {
-        List<Subject> allSubjects = subjectRepo.findAll();
-        return allSubjects;
+        return Optional.of(SubjectMapper.toDto(foundSubject));
     }
 
     @Transactional

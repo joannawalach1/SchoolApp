@@ -1,14 +1,12 @@
 package com.devs.controllers;
 
 
-import com.devs.domain.Exam;
 import com.devs.domain.dto.ExamDto;
 import com.devs.service.ExamService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,30 +19,24 @@ public class ExamController {
     }
 
     @PostMapping
-    public ResponseEntity<ExamDto> saveExam(@RequestBody ExamDto ExamDto) {
-        ExamDto createdExam = examService.save(ExamDto);
+    public ResponseEntity<ExamDto> saveExam(@RequestBody ExamDto examDto) {
+        ExamDto createdExam = examService.save(examDto);
         return ResponseEntity.status(HttpStatus.OK).body(createdExam);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<ExamDto>> findById(@PathVariable Long id) {
-        Optional<ExamDto> ExamDto = examService.findById(id);
-        return  ResponseEntity.status(HttpStatus.OK).body(ExamDto);
-    }
-
-    @GetMapping("/products")
-    public ResponseEntity<List<Exam>> findAll() {
-        List<Exam> allExams = examService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(allExams);
+        Optional<ExamDto> examDto = examService.findById(id);
+        return  ResponseEntity.status(HttpStatus.OK).body(examDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Optional<ExamDto>> updateExam(@PathVariable Long id, @RequestBody String ExamDto) {
-        Optional<ExamDto> updatedExam = examService.update(id, ExamDto);
+    public ResponseEntity<Optional<ExamDto>> updateExam(@PathVariable Long id, @RequestBody String examDto) {
+        Optional<ExamDto> updatedExam = examService.update(id, examDto);
         return ResponseEntity.status(HttpStatus.OK).body(updatedExam);
     }
 
-    @DeleteMapping("/{id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         examService.deleteById(id);
         return ResponseEntity.noContent().build();

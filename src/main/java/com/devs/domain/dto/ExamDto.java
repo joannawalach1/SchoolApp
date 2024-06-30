@@ -10,9 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExamDto {
-        private Long id;
         private String nameOfExam;
         private LocalDateTime dateOfExam;
-        private Long studentId;
         private Long subjectId;
+        private Long studentId;
 }

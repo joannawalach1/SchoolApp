@@ -14,14 +14,14 @@ public class ExamMapper {
         }
 
         ExamDto newExamDto = new ExamDto();
-        newExamDto.setId(exam.getId());
         newExamDto.setNameOfExam(exam.getNameOfExam());
         newExamDto.setDateOfExam(exam.getDateOfExam());
-        if (exam.getStudent() != null) {
-            newExamDto.setStudentId((exam.getStudent().getId()));
-        }
+
         if (exam.getSubject() != null) {
             newExamDto.setSubjectId((exam.getSubject().getId()));
+        }
+        if (exam.getStudent() != null) {
+            newExamDto.setStudentId((exam.getStudent().getId()));
         }
 
         return newExamDto;
@@ -33,23 +33,21 @@ public class ExamMapper {
         }
 
         Exam newExam = new Exam();
-        newExam.setId(examDto.getId());
         newExam.setNameOfExam(examDto.getNameOfExam());
         newExam.setDateOfExam(examDto.getDateOfExam());
-        if (examDto.getStudentId() != null) {
-            Student student = new Student();
-            student.setId(examDto.getStudentId());
-            newExam.setStudent(student);
-        } else {
-            newExam.setStudent(null);
-        }
+
 
         if (examDto.getSubjectId() != null) {
             Subject subject = new Subject();
-            subject.setId(examDto.getStudentId());
+            subject.setId(examDto.getSubjectId());
             newExam.setSubject(subject);
+            Student student = new Student();
+            student.setId(examDto.getStudentId());
+            newExam.setStudent(student);
+
         } else {
             newExam.setSubject(null);
+            newExam.setStudent(null);
         }
         return newExam;
     }

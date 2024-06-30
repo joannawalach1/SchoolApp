@@ -1,5 +1,6 @@
 package com.devs.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,11 +20,12 @@ public class Exam {
     private String nameOfExam;
     private LocalDateTime dateOfExam;
 
-    @ManyToOne
-    @JoinColumn(name="student_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    @JsonBackReference
     private Student student;
 
-    @ManyToOne
-    @JoinColumn(name="subject_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
     private Subject subject;
 }

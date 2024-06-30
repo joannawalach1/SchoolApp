@@ -5,6 +5,13 @@ spring:
     username: postgres
     password: 666666
     url: jdbc:postgresql://localhost:5432/school1
+    web:
+      cors:
+        allow-credentials: true
+        allowed-origins: "http://localhost:3000"
+        allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+        allowed-headers: "*"
+        exposed-headers: "*"
   jpa:
     open-in-view: 'false'
     show-sql: 'true'
@@ -19,6 +26,12 @@ spring:
   sql:
     init:
       mode: always
+  springdoc:
+    api-docs:
+      path: /v3/api-docs
+    swagger-ui:
+      path: /swagger-ui.html
+
 
   liquibase:
     enabled: 'true'
