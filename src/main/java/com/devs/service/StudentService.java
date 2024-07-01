@@ -25,7 +25,7 @@ public class StudentService {
 
     public StudentDto save(StudentDto studentDto) throws StudentWithSuchIdExists {
         Student student = StudentMapper.toEntity(studentDto);
-        if (student.getId() != null && studentRepo.existsById(student.getId())) {
+        if (student.getEmail() != null && studentRepo.existsById(student.getId())) {
             throw new StudentWithSuchIdExists("Student with Id" + student.getId() + "already exists");
         }
         Student savedStudent = studentRepo.save(student);

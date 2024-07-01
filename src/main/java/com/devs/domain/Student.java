@@ -22,7 +22,7 @@ public class Student {
     private Long id;
     private String name;
     private String email;
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JsonManagedReference
     private List<Exam> exams = new ArrayList<>();
 }
